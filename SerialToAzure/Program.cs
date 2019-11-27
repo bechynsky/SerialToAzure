@@ -31,9 +31,13 @@ namespace SerialToAzure
 
             _serial.PortName = port;
             _serial.BaudRate = baudrate;
+            _serial.DtrEnable = true;
+            _serial.RtsEnable = true;
             _serial.DataReceived += _serial_DataReceived;
 
             _serial.Open();
+
+            Console.WriteLine("Serial port " + port + " is open.");
 
             while (true) { };
         }
@@ -41,8 +45,7 @@ namespace SerialToAzure
         private static async void _serial_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             // Proces data from device
-            String[] message = _serial.ReadLine().Trim().Split(new char[] {';'});
-            String payload = "{'t':" + message[0] + ",'h':" + message[1] + "}";
+            String payload = _serial.ReadLine().Trim();
 
             // Prepare message
             _eventMessage = new Message(Encoding.UTF8.GetBytes(payload));
